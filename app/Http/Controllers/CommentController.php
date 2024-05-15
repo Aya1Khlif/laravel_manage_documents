@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,11 +14,16 @@ class CommentController extends Controller
             'content' => 'required|string',
         ]);
 
-        $comment = $document->comments()->create([
-            'content' => $validatedData['content'],
-            'user_id' => Auth::id(),
-        ]);
+        $userId = auth()->id();
 
+// ثم تأكد من تمريره عند إنشاء التعليق
+$comment = new Comment([
+    'content' => $request->input('content'),
+    'user_id' => $userId,
+    'commentable_id' => $request->input('commentable_id'),
+    'commentable_type' => $request->input('commentable_type'),
+]);
+$comment->save();
         return response()->json($comment, 201);
     }
 
