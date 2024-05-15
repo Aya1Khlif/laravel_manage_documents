@@ -9,6 +9,7 @@ class CommentController extends Controller
 {
     public function store(Request $request, Document $document)
     {
+        
         $validatedData = $request->validate([
             'content' => 'required|string',
         ]);

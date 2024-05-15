@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Models\Document;
 use App\Notifications\DocumentUploaded;
@@ -24,14 +25,21 @@ class DocumentController extends Controller
             'title' => 'required|string|max:255',
             'file' => 'required|file|mimes:pdf,doc,docx',
         ]);
-
         $path = $request->file('file')->store('documents');
-
         $document = Document::create([
             'title' => $validatedData['title'],
             'file_path' => $path,
             'user_id' => auth()->id(),
         ]);
+        $userId = auth()->id();
+        $comment = new Comment([
+            'content' => $request->input('content'),
+            'user_id' => $userId,
+            'commentable_id' => $request->input('commentable_id'),
+            'commentable_type' => $request->input('commentable_type'),
+        ]);
+
+        $comment->save();
          // حذف التخزين المؤقت لضمان البيانات المحدثة
          Cache::forget('documents');
          $user = auth()->user();
